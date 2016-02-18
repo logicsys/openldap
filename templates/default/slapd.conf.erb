@@ -15,7 +15,7 @@ TLSCertificateKeyFile  <%= node['openldap']['ssl_key'] %>
 TLSCACertificateFile   <%= node['openldap']['cafile'] %>
 <% end -%>
 <% if node['openldap']['ssl_ciphersuite'] -%>
-TLSCipherSuite   <%= node['openldap']['ssl_ciphersuite'] %>
+TLSCipherSuite         <%= node['openldap']['ssl_ciphersuite'] %>
 <% end -%>
 <% end -%>
 
