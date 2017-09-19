@@ -61,6 +61,7 @@ rootdn          "cn=<%= node['openldap']['cn'] %>,<%= node['openldap']['basedn']
 rootpw          <%= node['openldap']['rootpw'] %>
 directory       "<%= openldap_db_dir %>"
 lastmod         on
+monitoring      off
 
 <% if node['openldap']['database'] == 'hdb' -%>
 dbconfig set_cachesize <%= node['openldap']['dbconfig']['set_cachesize'] %>
