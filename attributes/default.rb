@@ -54,7 +54,12 @@ if platform_family?('freebsd')
   default['openldap']['modules'] = %w(back_mdb)
   default['openldap']['database'] = 'mdb'
 else
-  default['openldap']['modules'] = %w(back_hdb)
+  if node['platform'] == 'centos'
+    default['openldap']['modules'] = []
+  else
+    default['openldap']['modules'] = %w(back_hdb)
+  end
+
   default['openldap']['database'] = 'hdb'
   default['openldap']['dbconfig']['set_cachesize'] = '0 31457280 0'
   default['openldap']['dbconfig']['set_lk_max_objects'] = '1500'
@@ -82,6 +87,15 @@ default['openldap']['rootpw'] = nil
 default['openldap']['preseed_dir'] = '/var/cache/local/preseeding'
 default['openldap']['loglevel'] = 'sync config'
 default['openldap']['schemas'] = %w(core.schema cosine.schema nis.schema inetorgperson.schema)
+
+# Password policy
+default['openldap']['ppolicy'] = false
+default['openldap']['ppolicy_hash_cleartext'] = true
+default['openldap']['ppolicy_use_lockout'] = true
+
+# Audit log
+default['openldap']['auditlog'] = nil
+default['openldap']['auditlog_file'] = '/var/log/openldap/audit.log'
 
 # TLS/SSL
 default['openldap']['ldaps_enabled'] = false

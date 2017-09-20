@@ -15,7 +15,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+
+# if password policy overlay is enabled,
+# then force the ppolicy schema + modules
+schemas = node['openldap']['schemas'].to_a
+modules = node['openldap']['modules'].to_a
+
+modules << 'syncprov' if node['openldap']['slapd_type'] == 'master'
+
+if node['openldap']['ppolicy']
+  schemas << 'ppolicy.schema'
+  modules << 'ppolicy'
+end
+
+modules << 'auditlog' if node['openldap']['auditlog']
+
+node.set['openldap']['schemas'] = schemas.sort.uniq
+node.set['openldap']['modules'] = modules.sort.uniq
+
 
 openldap_install 'Install packages' do
   package_action node['openldap']['package_install_action']
