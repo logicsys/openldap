@@ -33,6 +33,7 @@ argsfile        <%= openldap_run_dir %>/slapd.args
 # Read slapd.conf(5) for possible values
 loglevel        <%= node['openldap']['loglevel'] %>
 
+<% unless node['openldap']['modules'].empty? -%>
 # Where the dynamically loaded modules are stored
 modulepath       <%= openldap_module_dir %>
 <% node['openldap']['modules'].sort.each do |mod| -%>
@@ -117,6 +118,31 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 # below. These access lines apply to database #1 only.
 access to attrs=<%= node['openldap']['user_attrs'] %>
         by group.exact="cn=<%= node['openldap']['admin_cn'] %>,<%= node['openldap']['basedn'] %>" write
+<% if node['openldap']['ppolicy'] -%>
+### Load password overlay
+overlay ppolicy
+ppolicy_default "cn=passwordDefault,ou=Policies,<%= node['openldap']['basedn'] %>"
+<% if node['openldap']['ppolicy_hash_cleartext'] -%>
+ppolicy_hash_cleartext
+<% end -%>
+<% if node['openldap']['ppolicy_use_lockout'] -%>
+ppolicy_use_lockout
+<% end -%>
+<% end -%>
+
+<% if node['openldap']['auditlog'] -%>
+### Load audit log overlay
+overlay auditlog
+auditlog <%= node['openldap']['auditlog_file'] %>
+<% end -%>
+
+# The userPassword by default can be changed
+# by the entry owning it if they are authenticated.
+# Others should not be able to see it, except the
+# admin entry below
+# These access lines apply to database #1 only
+access to attrs=userPassword,shadowLastChange
+        by group.exact="cn=administrators,<%= node['openldap']['basedn'] %>" write
 <% if node['openldap']['slapd_type'] == "provider" -%>
         by dn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>" read
 <% end -%>

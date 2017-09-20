@@ -59,6 +59,11 @@ Set this via a node/role/env attribute or in a wrapper cookbook with an encrypte
 - `openldap['indexes]' - Array of indexes to use
 - `openldap['admin_cn']` - Admin CN name `administrators (default)`
 - `openldap['user_attrs']` - User access attributes `userPassword,shadowLastChange (default)`
+- `openldap['ppolicy']` - Set this to true to enable the password policy overlay. Defaults to false
+- `openldap['ppolicy_hash_cleartext']` - If the password policy overlay is enabled, set ppolicy_hash_cleartext. Defaults to true
+- `openldap['ppolicy_use_lockout']` - If the password policy overlay is enabled, set ppolicy_use_lockout. Defaults to true
+- `openldap['auditlog']` - Set this to true to enable the audit log overlay. Defaults to false
+- `openldap['auditlog_file']` - If the audit log overlay is enabled, this configures the file to write to. Defaults to /var/log/openldap/audit.log (note - the directory this is in must be writable by the ldap user)
 
 ### TLS/SSL
 
