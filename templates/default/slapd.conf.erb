@@ -7,6 +7,9 @@
 # $Id:$
 ####
 
+<% if node['openldap']['server_id'] -%>
+serverID <%= node['openldap']['server_id'] %>
+<%- end -%>
 # TLS configuration
 <% if node['openldap']['tls_enabled'] || node['openldap']['ldaps_enabled']-%>
 TLSCertificateFile     <%= node['openldap']['tls_cert'] %>
@@ -40,7 +43,7 @@ modulepath       <%= node['openldap']['module_dir'] %>
 <% node['openldap']['modules'].sort.each do |mod| -%>
 moduleload       <%= mod %>
 <% end -%>
-<% if node['openldap']['slapd_type'] == "provider" -%>
+<% if ['provider', 'peer' ].include? node['openldap']['slapd_type'] -%>
 moduleload       syncprov
 <% end -%>
 <% end -%>
@@ -90,8 +93,14 @@ index uidNumber,gidNumber pres,eq
 <% node['openldap']['syncrepl_provider_config'].each do |key, value| -%>
 <%= key %> <%= value %>
 <% end -%>
+
+<% if [ 'provider', 'peer' ].include? node['openldap']['slapd_type'] -%>
+overlay syncprov
+syncprov-checkpoint 100 10
+syncprov-sessionlog 100
 <% end -%>
-<% if node['openldap']['slapd_type'] == "consumer" -%>
+
+<% if [ 'consumer', 'peer' ].include? node['openldap']['slapd_type'] -%>
 syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 <% if node['openldap']['slapd_provider'] -%>
   provider=<%= node['openldap']['syncrepl_uri'] %>://<%= node['openldap']['slapd_provider'] %>:<%= node['openldap']['syncrepl_port'] %>
@@ -101,6 +110,21 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 <% node['openldap']['syncrepl_consumer_config'].each do |key, value| -%>
   <%= key %>=<%= value %>
 <% end -%>
+  type=<%= node['openldap']['syncrepl_type'] %>
+  interval=<%= node['openldap']['syncrepl_interval'] %>
+  searchbase="<%= node['openldap']['basedn'] %>"
+<% if  node['openldap']['syncrepl_filter'] -%>
+  filter="<%= node['openldap']['syncrepl_filter'] %>"
+<% end -%>
+  scope=sub
+  schemachecking=off
+  bindmethod=simple
+  binddn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>"
+  starttls=<%= node['openldap']['syncrepl_use_tls'] %>
+  credentials="<%= node['openldap']['slapd_replpw'] %>"
+<% end -%>
+<% if node['openldap']['slapd_type'] == 'peer' -%>
+mirrormode TRUE
 <% end -%>
 
 <% node['openldap']['server_config_hash'].each do |key, value| -%>
@@ -142,7 +166,7 @@ auditlog <%= node['openldap']['auditlog_file'] %>
 # These access lines apply to database #1 only
 access to attrs=userPassword,shadowLastChange
         by group.exact="cn=administrators,<%= node['openldap']['basedn'] %>" write
-<% if node['openldap']['slapd_type'] == "provider" -%>
+<% if ['provider', 'peer'].include? node['openldap']['slapd_type'] -%>
         by dn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>" read
 <% end -%>
         by anonymous auth
@@ -164,7 +188,7 @@ access to dn.base="" by * read
 # can read everything.
 access to *
         by group.exact="cn=administrators,<%= node['openldap']['basedn'] %>" write
-<% if node['openldap']['slapd_type'] == "provider" -%>
+<% if ['provider', 'peer'].include? node['openldap']['slapd_type'] -%>
         by dn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>" read
 <% end -%>
         by * read
