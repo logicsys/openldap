@@ -116,6 +116,12 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 <% if  node['openldap']['syncrepl_filter'] -%>
   filter="<%= node['openldap']['syncrepl_filter'] %>"
 <% end -%>
+<% if  node['openldap']['syncrepl_attrs'] -%>
+  attrs="<%= node['openldap']['syncrepl_attrs'] %>"
+<% end -%>
+<% if  node['openldap']['syncrepl_retry'] -%>
+  retry="<%= node['openldap']['syncrepl_retry'] %>"
+<% end -%>
   scope=sub
   schemachecking=off
   bindmethod=simple
