@@ -75,6 +75,10 @@ Attributes related to replication (syncrepl). Only used if a provider or consume
 - `openldap['slapd_rid']` - unique integer ID, required if type is consumer
 - `openldap['syncrepl_uri']` - `ldap (default) | ldaps`
 - `openldap['syncrepl_port']` - `'389 (default) | 636'`
+- `openldap['syncrepl_interval']` - interval for the sync. Defaults to 1 day
+- `openldap['syncrepl_type']` - defaults to 'refreshAndPersist'
+- `openldap['syncrepl_filter']` - search filter to use in the replication
+- `openldap['syncrepl_use_tls']` - `yes | ldaps | no (default)`, 'yes' will set 'starttls', 'ldaps' will connect via ldaps
 - `openldap['syncrepl_cn']` - the CN (only) of the user to use as binddn as consumer
 
 The following syncrepl values are set by default, others can be added by setting the appropriate key value
