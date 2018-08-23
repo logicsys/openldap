@@ -112,7 +112,6 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 <% node['openldap']['syncrepl_consumer_config'].each do |key, value| -%>
   <%= key %>=<%= value %>
 <% end -%>
-
   type=<%= node['openldap']['syncrepl_type'] %>
   interval=<%= node['openldap']['syncrepl_interval'] %>
   searchbase="<%= node['openldap']['basedn'] %>"
@@ -204,10 +203,14 @@ access to *
 <% end -%>
         by * read
 
+<% unless node['etc']['passwd'][node['openldap']['system_acct']].nil? -%>
 <% ldap_uid = node['etc']['passwd'][node['openldap']['system_acct']]['uid'] -%>
 <% ldap_gid = node['etc']['passwd'][node['openldap']['system_group']]['gid'] -%>
+<% end -%>
 database config
 access to *
         by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage
+<% unless ldap_uid.nil? -%>
         by dn.exact="gidNumber=<%= ldap_gid %>+uidNumber=<%= ldap_uid %>,cn=peercred,cn=external,cn=auth" manage
+<% end -%>
         by * none
