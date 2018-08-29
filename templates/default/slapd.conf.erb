@@ -20,7 +20,6 @@ TLSCACertificateFile   <%= node['openldap']['tls_cafile'] %>
 <% if node['openldap']['tls_ciphersuite'] -%>
 TLSCipherSuite         <%= node['openldap']['tls_ciphersuite'] %>
 <% end -%>
-<% end -%>
 
 # Schema and objectClass definitions
 <% node['openldap']['schemas'].sort.each do |schema| -%>
@@ -45,7 +44,6 @@ moduleload       <%= mod %>
 <% end -%>
 <% if ['provider', 'peer' ].include? node['openldap']['slapd_type'] -%>
 moduleload       syncprov
-<% end -%>
 <% end -%>
 
 # The tool-threads parameter sets the actual amount of cpu's that is used
@@ -131,6 +129,11 @@ syncrepl rid=<%= node['openldap']['slapd_rid'] %>
 <% unless node['openldap']['syncrepl_use_tls'] == 'ldaps' -%>
   starttls=<%= node['openldap']['syncrepl_use_tls'] %>
 <% end -%>
+<% unless node['openldap']['syncrepl_tls_config'].nil? -%>
+  <% node['openldap']['syncrepl_tls_config'].each do |key, value| -%>
+  tls_<%= key %>="<%= value %>"
+  <% end -%>
+<% end -%>
   credentials="<%= node['openldap']['slapd_replpw'] %>"
 <% end -%>
 <% if node['openldap']['slapd_type'] == 'peer' -%>
@@ -160,7 +163,6 @@ ppolicy_hash_cleartext
 <% end -%>
 <% if node['openldap']['ppolicy_use_lockout'] -%>
 ppolicy_use_lockout
-<% end -%>
 <% end -%>
 
 <% if node['openldap']['auditlog'] -%>
