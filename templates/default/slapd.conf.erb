@@ -14,11 +14,13 @@ serverID <%= node['openldap']['server_id'] %>
 <% if node['openldap']['tls_enabled'] || node['openldap']['ldaps_enabled']-%>
 TLSCertificateFile     <%= node['openldap']['tls_cert'] %>
 TLSCertificateKeyFile  <%= node['openldap']['tls_key'] %>
-<% if node['openldap']['tls_cafile'] -%>
+<%   if node['openldap']['tls_cafile'] -%>
 TLSCACertificateFile   <%= node['openldap']['tls_cafile'] %>
-<% end -%>
-<% if node['openldap']['tls_ciphersuite'] -%>
+<%   end -%>
+
+<%   if node['openldap']['tls_ciphersuite'] -%>
 TLSCipherSuite         <%= node['openldap']['tls_ciphersuite'] %>
+<%   end -%>
 <% end -%>
 
 # Schema and objectClass definitions
@@ -39,8 +41,9 @@ loglevel        <%= node['openldap']['loglevel'] %>
 <% unless node['openldap']['modules'].empty? -%>
 # Where the dynamically loaded modules are stored
 modulepath       <%= node['openldap']['module_dir'] %>
-<% node['openldap']['modules'].sort.each do |mod| -%>
+<%   node['openldap']['modules'].sort.each do |mod| -%>
 moduleload       <%= mod %>
+<%   end -%>
 <% end -%>
 <% if ['provider', 'peer' ].include? node['openldap']['slapd_type'] -%>
 moduleload       syncprov
@@ -88,8 +91,9 @@ index loginShell,homeDirectory pres,eq,approx
 index uidNumber,gidNumber pres,eq
 
 <% if node['openldap']['slapd_type'] == "provider" -%>
-<% node['openldap']['syncrepl_provider_config'].each do |key, value| -%>
+<%   node['openldap']['syncrepl_provider_config'].each do |key, value| -%>
 <%= key %> <%= value %>
+<%   end -%>
 <% end -%>
 
 <% if [ 'provider', 'peer' ].include? node['openldap']['slapd_type'] -%>
@@ -102,38 +106,38 @@ syncprov-sessionlog 100
 <% proto = (node['openldap']['syncrepl_use_tls'] == 'ldaps') ? 'ldaps' : 'ldap' -%>
 <% port = (node['openldap']['syncrepl_use_tls'] == 'ldaps') ? '636' : '389' -%>
 syncrepl rid=<%= node['openldap']['slapd_rid'] %>
-<% if node['openldap']['slapd_provider'] -%>
+<%   if node['openldap']['slapd_provider'] -%>
   provider=<%= node['openldap']['syncrepl_uri'] %>://<%= node['openldap']['slapd_provider'] %>:<%= node['openldap']['syncrepl_port'] %>
-<% else %>
+<%   else %>
   provider=<%= node['openldap']['syncrepl_uri'] %>://<%= node['openldap']['server'] %>:<%= node['openldap']['syncrepl_port'] %>
-<% end -%>
-<% node['openldap']['syncrepl_consumer_config'].each do |key, value| -%>
+<%   end -%>
+<%   node['openldap']['syncrepl_consumer_config'].each do |key, value| -%>
   <%= key %>=<%= value %>
-<% end -%>
+<%   end -%>
   type=<%= node['openldap']['syncrepl_type'] %>
   interval=<%= node['openldap']['syncrepl_interval'] %>
   searchbase="<%= node['openldap']['basedn'] %>"
-<% if  node['openldap']['syncrepl_filter'] -%>
+<%   if node['openldap']['syncrepl_filter'] -%>
   filter="<%= node['openldap']['syncrepl_filter'] %>"
-<% end -%>
-<% if  node['openldap']['syncrepl_attrs'] -%>
+<%   end -%>
+<%   if node['openldap']['syncrepl_attrs'] -%>
   attrs="<%= node['openldap']['syncrepl_attrs'] %>"
-<% end -%>
-<% if  node['openldap']['syncrepl_retry'] -%>
+<%   end -%>
+<%   if  node['openldap']['syncrepl_retry'] -%>
   retry="<%= node['openldap']['syncrepl_retry'] %>"
-<% end -%>
+<%   end -%>
   scope=sub
   schemachecking=off
   bindmethod=simple
   binddn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>"
-<% unless node['openldap']['syncrepl_use_tls'] == 'ldaps' -%>
+<%   unless node['openldap']['syncrepl_use_tls'] == 'ldaps' -%>
   starttls=<%= node['openldap']['syncrepl_use_tls'] %>
-<% end -%>
-<% unless node['openldap']['syncrepl_tls_config'].nil? -%>
-  <% node['openldap']['syncrepl_tls_config'].each do |key, value| -%>
+<%   end -%>
+<%   unless node['openldap']['syncrepl_tls_config'].nil? -%>
+<%     node['openldap']['syncrepl_tls_config'].each do |key, value| -%>
   tls_<%= key %>="<%= value %>"
-  <% end -%>
-<% end -%>
+<%     end -%>
+<%   end -%>
   credentials="<%= node['openldap']['slapd_replpw'] %>"
 <% end -%>
 <% if node['openldap']['slapd_type'] == 'peer' -%>
@@ -158,11 +162,12 @@ mirrormode TRUE
 ### Load password overlay
 overlay ppolicy
 ppolicy_default "cn=passwordDefault,ou=Policies,<%= node['openldap']['basedn'] %>"
-<% if node['openldap']['ppolicy_hash_cleartext'] -%>
+<%   if node['openldap']['ppolicy_hash_cleartext'] -%>
 ppolicy_hash_cleartext
-<% end -%>
-<% if node['openldap']['ppolicy_use_lockout'] -%>
+<%   end -%>
+<%   if node['openldap']['ppolicy_use_lockout'] -%>
 ppolicy_use_lockout
+<%   end -%>
 <% end -%>
 
 <% if node['openldap']['auditlog'] -%>
