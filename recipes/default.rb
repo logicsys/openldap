@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # if password policy overlay is enabled,
 # then force the ppolicy schema + modules
 schemas = node['openldap']['schemas'].to_a
@@ -31,9 +30,8 @@ end
 
 modules << 'auditlog' if node['openldap']['auditlog']
 
-node.set['openldap']['schemas'] = schemas.sort.uniq
-node.set['openldap']['modules'] = modules.sort.uniq
-
+node.normal['openldap']['schemas'] = schemas.sort.uniq
+node.normal['openldap']['modules'] = modules.sort.uniq
 
 openldap_install 'Install packages' do
   package_action node['openldap']['package_install_action']
