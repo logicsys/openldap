@@ -30,8 +30,8 @@ end
 
 modules << 'auditlog' if node['openldap']['auditlog']
 
-node.normal['openldap']['schemas'] = schemas.sort.uniq
-node.normal['openldap']['modules'] = modules.sort.uniq
+node.override['openldap']['schemas'] = schemas.sort.uniq
+node.override['openldap']['modules'] = modules.sort.uniq
 
 openldap_install 'Install packages' do
   package_action node['openldap']['package_install_action']

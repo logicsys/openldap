@@ -21,11 +21,11 @@ if platform_family?('freebsd')
   default['openldap']['modules'] = %w(back_mdb)
   default['openldap']['database'] = 'mdb'
 else
-  if node['platform'] == 'centos'
-    default['openldap']['modules'] = []
-  else
-    default['openldap']['modules'] = %w(back_hdb)
-  end
+  default['openldap']['modules'] = if platform?('centos')
+                                     []
+                                   else
+                                     %w(back_hdb)
+                                   end
 
   default['openldap']['database'] = 'hdb'
   default['openldap']['dbconfig']['set_cachesize'] = '0 31457280 0'
