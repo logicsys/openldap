@@ -155,11 +155,7 @@ mirrormode TRUE
 <%   end -%>
 <% end -%>
 
-# The userPassword by default can be changed by the entry owning it if they are
-# authenticated. Others should not be able to see it, except the admin entry
-# below. These access lines apply to database #1 only.
-access to attrs=<%= node['openldap']['user_attrs'] %>
-        by group.exact="cn=<%= node['openldap']['admin_cn'] %>,<%= node['openldap']['basedn'] %>" write
+
 <% if node['openldap']['ppolicy'] -%>
 ### Load password overlay
 overlay ppolicy
@@ -178,33 +174,6 @@ overlay auditlog
 auditlog <%= node['openldap']['auditlog_file'] %>
 <% end -%>
 
-# The userPassword by default can be changed
-# by the entry owning it if they are authenticated.
-# Others should not be able to see it, except the
-# admin entry below
-# These access lines apply to database #1 only
-access to attrs=userPassword,shadowLastChange
-        by group.exact="cn=administrators,<%= node['openldap']['basedn'] %>" write
-<% if ['provider', 'peer'].include? node['openldap']['slapd_type'] -%>
-        by dn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>" read
-<% end -%>
-        by anonymous auth
-        by self write
-        by * none
-
-# Ensure read access to the base for things like supportedSASLMechanisms.
-# Without this you may have problems with SASL not knowing what mechanisms are
-# available and the like. Note that this is covered by the 'access to *' ACL
-# below too but if you change that as people are wont to do you'll still need
-# this if you want SASL (and possible other things) to work happily.
-access to dn.base="" by * read
-
-# The admin dn has full write access, everyone else can read everything.
-access to *
-<% if ['provider', 'peer'].include? node['openldap']['slapd_type'] -%>
-        by dn="<%= node['openldap']['syncrepl_cn'] %>,<%= node['openldap']['basedn'] %>" read
-<% end -%>
-        by * read
 
 <% unless node['etc']['passwd'][node['openldap']['system_acct']].nil? -%>
 <% ldap_uid = node['etc']['passwd'][node['openldap']['system_acct']]['uid'] -%>

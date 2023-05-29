@@ -74,3 +74,21 @@ execute 'rebuild slapd.d files' do
   action :nothing
   notifies :restart, 'service[slapd]', :immediately
 end
+
+# apply olcaccess live so they dont get mangled by slaptest
+template "#{openldap_dir}/olc_access.ldif" do
+  source 'slapd_access.ldif.erb'
+  helpers(::Openldap::Cookbook::Helpers)
+  mode '0640'
+  owner openldap_system_acct
+  group openldap_system_group
+  sensitive true
+end
+
+execute 'replace olcaccess rules' do
+  command "ldapmodify -v -Y EXTERNAL -H ldapi:/// -f #{openldap_dir}/olc_access.ldif"
+end
+
+# file "#{openldap_dir}/olc_access.ldif" do
+#   action :delete
+# end
