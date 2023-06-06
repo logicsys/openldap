@@ -1,0 +1,9 @@
+dn: olcDatabase={1}hdb,cn=config
+changeType: modify
+replace: olcPasswordHash
+# The userPassword by default can be changed
+# by the entry owning it if they are authenticated.
+# Others should not be able to see it, except the
+# admin entry below
+# These access lines apply to database #1 only
+olcPasswordHash: <%= node['openldap']['password_hash_algo'] %>

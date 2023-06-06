@@ -89,6 +89,20 @@ execute 'replace olcaccess rules' do
   command "ldapmodify -v -Y EXTERNAL -H ldapi:/// -f #{openldap_dir}/olc_access.ldif"
 end
 
+# apply pwhash
+template "#{openldap_dir}/olc_pwhash.ldif" do
+  source 'slapd_pwhash.ldif.erb'
+  helpers(::Openldap::Cookbook::Helpers)
+  mode '0640'
+  owner openldap_system_acct
+  group openldap_system_group
+  sensitive true
+end
+
+execute 'replace olc_pwhash rules' do
+  command "ldapmodify -v -Y EXTERNAL -H ldapi:/// -f #{openldap_dir}/olc_pwhash.ldif"
+end
+
 # file "#{openldap_dir}/olc_access.ldif" do
 #   action :delete
 # end

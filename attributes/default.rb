@@ -69,6 +69,9 @@ default['openldap']['ppolicy'] = false
 default['openldap']['ppolicy_hash_cleartext'] = true
 default['openldap']['ppolicy_use_lockout'] = true
 
+# Password Hash Scheme
+default['openldap']['password_hash_algo'] = "{CRYPT}"
+
 # Audit log
 default['openldap']['auditlog'] = nil
 default['openldap']['auditlog_file'] = '/var/log/openldap/audit.log'
